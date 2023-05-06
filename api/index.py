@@ -93,7 +93,7 @@ class handler(BaseHTTPRequestHandler):
                                                   "photo": photo_id,
                                               })
 
-                        if user_command == "page":
+                        if user_command == "pagination":
                             self.reply_user({
                                 "text": "Page 1",
                                 "reply_markup": {

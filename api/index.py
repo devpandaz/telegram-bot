@@ -19,7 +19,7 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 print(BOT_URL)
 
 
-class S(BaseHTTPRequestHandler):
+class handler(BaseHTTPRequestHandler):
 
     def _set_response(self):
         self.send_response(200)

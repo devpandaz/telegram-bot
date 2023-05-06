@@ -38,8 +38,8 @@ class handler(BaseHTTPRequestHandler):
                      str(self.headers))
         self._set_response()
         self.wfile.write(
-            "this is the api for devpandaz telegram bot\n<b><i>can?</i></b>".
-            encode('utf-8'))
+            "this is the api for devpandaz telegram bot<br><a href='https://t.me/devpandaz_tutorial_bot'>use the bot</a>"
+            .encode('utf-8'))
         # self.wfile.write("GET request for {}".format(
         # self.path).encode('utf-8'))
 

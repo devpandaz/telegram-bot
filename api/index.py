@@ -30,8 +30,10 @@ class handler(BaseHTTPRequestHandler):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path),
                      str(self.headers))
         self._set_response()
-        self.wfile.write("GET request for {}".format(
-            self.path).encode('utf-8'))
+        self.wfile.write(
+            "this is the api for devpandaz telegram bot\n".encode('utf-8'))
+        # self.wfile.write("GET request for {}".format(
+        # self.path).encode('utf-8'))
 
     def reply_user(self, reply_content):
         if type(reply_content) == str:
@@ -64,8 +66,12 @@ class handler(BaseHTTPRequestHandler):
             try:
                 if received['entities'][0]['type'] == "bot_command":
                     user_command = received['text'][1:]
-                    if user_command == 'caps':
-                        self.reply_user('using caps command')
+                    if user_command == 'anime_quote':
+                        anime_quote_data = requests.get(
+                            'https://animechan.vercel.app/api/random').json()
+                        self.reply_user(
+                            f'"{anime_quote_data["quote"]}"\n\n---- a quote from {anime_quote_data["character"]} ({anime_quote_data["anime"]})'
+                        )
             except KeyError:
                 self.reply_user('hello! how are you today?')
 

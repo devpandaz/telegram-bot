@@ -6,6 +6,7 @@ Very simple HTTP server in python for logging requests
 Usage::
     ./server.py [<port>]
 """
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import json
@@ -17,14 +18,15 @@ load_dotenv()
 
 BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 
+current_command = ""
+client_chat_id = ""
+jian_kai_memes_photo_id = [
+    "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
+    "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
+]
+
 
 class handler(BaseHTTPRequestHandler):
-
-    client_chat_id = ""
-    jian_kai_memes_photo_id = [
-        "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
-        "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
-    ]
 
     def _set_response(self):
         self.send_response(200)
@@ -36,18 +38,21 @@ class handler(BaseHTTPRequestHandler):
                      str(self.headers))
         self._set_response()
         self.wfile.write(
-            "this is the api for devpandaz telegram bot\n".encode('utf-8'))
+            "this is the api for devpandaz telegram bot\n<b><i>can?</i></b>".
+            encode('utf-8'))
         # self.wfile.write("GET request for {}".format(
         # self.path).encode('utf-8'))
 
     def reply_user(self, data):
         requests.post(f'{BOT_URL}/sendMessage',
                       json={
-                          "chat_id": self.client_chat_id,
+                          "chat_id": client_chat_id,
                           **data,
                       })
 
     def do_POST(self):
+        global current_command, client_chat_id, jian_kai_memes_photo_id
+
         content_length = int(
             self.headers['Content-Length'])  # <--- Gets the size of data
         post_data = self.rfile.read(
@@ -66,10 +71,28 @@ class handler(BaseHTTPRequestHandler):
         if "message" in data:
 
             # settings client chat id if havent already
-            self.client_chat_id = data['message']['chat']['id']
+            if not client_chat_id:
+                client_chat_id = data['message']['chat']['id']
 
             received = data['message']
             if "text" in received:
+                if current_command:
+                    if current_command == "reply_keyboard":
+                        if received['text'] in [
+                                'Option 1', 'Option 2', 'Option 3'
+                        ]:
+                            self.reply_user({
+                                "text": f"you chose {received['text']}. ",
+                                "reply_markup": {
+                                    "remove_keyboard": True,
+                                },
+                            })
+
+                    # clear the current command regardless of whether user followed up properly
+                    # if they got follow up properly, they get the results as intended
+                    # if not, we cancel the current operation
+                    current_command = ""
+                    return
                 try:
                     if received['entities'][0]['type'] == "bot_command":
                         user_command = received['text'][1:]
@@ -85,11 +108,10 @@ class handler(BaseHTTPRequestHandler):
                         if user_command == "jiankai":
                             self.reply_user(
                                 {"text": 'here are some jian kai memes:'})
-                            for photo_id in self.jian_kai_memes_photo_id:
+                            for photo_id in jian_kai_memes_photo_id:
                                 requests.post(f'{BOT_URL}/sendPhoto',
                                               json={
-                                                  "chat_id":
-                                                  self.client_chat_id,
+                                                  "chat_id": client_chat_id,
                                                   "photo": photo_id,
                                               })
 
@@ -107,6 +129,30 @@ class handler(BaseHTTPRequestHandler):
                                     ]
                                 }
                             })
+
+                        if user_command == "reply_keyboard":
+                            current_command = 'reply_keyboard'
+                            self.reply_user(
+                                {
+                                    "text": "choose one option",
+                                    "reply_markup": {
+                                        "keyboard": [
+                                            [
+                                                {
+                                                    "text": "Option 1"
+                                                },
+                                                {
+                                                    "text": "Option 2"
+                                                },
+                                                {
+                                                    "text": "Option 3"
+                                                },
+                                            ],
+                                        ],
+                                        "one_time_keyboard":
+                                        True,
+                                    },
+                                }, )
 
                 except KeyError:
                     self.reply_user({

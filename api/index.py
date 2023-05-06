@@ -19,6 +19,8 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 
 class handler(BaseHTTPRequestHandler):
 
+    client_chat_id = ""
+
     def _set_response(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -30,6 +32,14 @@ class handler(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write("GET request for {}".format(
             self.path).encode('utf-8'))
+
+    def reply_user(self, reply_content):
+        if type(reply_content) == str:
+            requests.post(f'{BOT_URL}/sendMessage',
+                          json={
+                              "chat_id": self.client_chat_id,
+                              "text": reply_content
+                          })
 
     def do_POST(self):
         content_length = int(
@@ -45,12 +55,19 @@ class handler(BaseHTTPRequestHandler):
             self.path).encode('utf-8'))
 
         data = json.loads(post_data.decode('utf-8'))
+        print(json.dumps(data, indent=4))
 
-        requests.post(f'{BOT_URL}/sendMessage',
-                      json={
-                          "chat_id": data['message']['chat']['id'],
-                          "text": data['message']['text'][::-1],
-                      })
+        self.client_chat_id = data['message']['chat']['id']
+
+        received = data['message']
+        if "text" in received:
+            try:
+                if received['entities'][0]['type'] == "bot_command":
+                    user_command = received['text'][1:]
+                    if user_command == 'caps':
+                        self.reply_user('using caps command')
+            except KeyError:
+                self.reply_user('hello! how are you today?')
 
 
 def run(server_class=HTTPServer, handler_class=handler, port=8080):

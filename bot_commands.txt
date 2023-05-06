@@ -1,0 +1,3 @@
+anime_quote - Generate a random anime quote.
+jiankai - send jian kai memes
+pagination - a pagination example using inline keyboard

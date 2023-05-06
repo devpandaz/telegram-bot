@@ -20,6 +20,10 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 class handler(BaseHTTPRequestHandler):
 
     client_chat_id = ""
+    jian_kai_memes = [
+        "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
+        "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
+    ]
 
     def _set_response(self):
         self.send_response(200)
@@ -72,6 +76,16 @@ class handler(BaseHTTPRequestHandler):
                         self.reply_user(
                             f'"{anime_quote_data["quote"]}"\n\n---- a quote from {anime_quote_data["character"]} ({anime_quote_data["anime"]})'
                         )
+
+                    if user_command == "jiankai":
+                        self.reply_user('here are some jian kai memes:')
+                        for photo_id in self.jian_kai_memes:
+                            requests.post(f'{BOT_URL}/sendPhoto',
+                                          json={
+                                              "chat_id": self.client_chat_id,
+                                              "photo": photo_id,
+                                          })
+
             except KeyError:
                 self.reply_user('hello! how are you today?')
 

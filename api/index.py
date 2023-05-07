@@ -19,7 +19,9 @@ load_dotenv()
 BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 
 current_command = ""
+
 client_chat_id = ""
+
 jian_kai_memes_photo_id = [
     "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
     "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
@@ -71,10 +73,7 @@ class handler(BaseHTTPRequestHandler):
 
         # if a message is received
         if "message" in data:
-
-            # settings client chat id if havent already
-            if not client_chat_id:
-                client_chat_id = data['message']['chat']['id']
+            client_chat_id = data['message']['chat']['id']
 
             received = data['message']
             if "text" in received:
@@ -116,6 +115,8 @@ class handler(BaseHTTPRequestHandler):
                 try:
                     # checking if it's a bot command
                     if received['entities'][0]['type'] == "bot_command":
+
+                        # removing the '/' in front
                         user_command = received['text'][1:]
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(

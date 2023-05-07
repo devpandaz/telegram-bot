@@ -109,6 +109,7 @@ class handler(BaseHTTPRequestHandler):
                                 "text":
                                 f'"{anime_quote_data["quote"]}"\n\n---- a quote from {anime_quote_data["character"]} ({anime_quote_data["anime"]})',
                             })
+                            return
 
                         if user_command == "jiankai":
                             self.reply_user(

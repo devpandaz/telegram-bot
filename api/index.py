@@ -44,11 +44,11 @@ class handler(BaseHTTPRequestHandler):
         # self.path).encode('utf-8'))
 
     def reply_user(self, data):
-        requests.post(f'{BOT_URL}/sendMessage',
-                      json={
-                          "chat_id": client_chat_id,
-                          **data,
-                      })
+        return requests.post(f'{BOT_URL}/sendMessage',
+                             json={
+                                 "chat_id": client_chat_id,
+                                 **data,
+                             }).json()
 
     def do_POST(self):
         global current_command, client_chat_id, jian_kai_memes_photo_id
@@ -78,6 +78,7 @@ class handler(BaseHTTPRequestHandler):
 
             received = data['message']
             if "text" in received:
+
                 # follow up previous command
                 if current_command:
                     if current_command == "reply_keyboard":
@@ -91,12 +92,27 @@ class handler(BaseHTTPRequestHandler):
                                     "remove_keyboard": True,
                                 },
                             })
+                        current_command = ""
+                        return
 
-                    # clear the current command regardless of whether user followed up properly
-                    # if they got follow up properly, they get the results as intended
-                    # if not, we cancel the current operation
-                    current_command = ""
-                    return
+                    if "asking for name" in current_command:
+                        should_reply_to_message_id = int(
+                            current_command.split(":")[1])
+                        try:
+                            if received['reply_to_message'][
+                                    'message_id'] == should_reply_to_message_id:
+                                self.reply_user({
+                                    "text":
+                                    f"your name is {received['text']}"
+                                })
+                                current_command = ""
+                                return
+
+                        # user didnt reply to the message
+                        except KeyError:
+                            current_command = ""
+                            # no return, take user input down, treat it like any other command / text
+
                 try:
                     # checking if it's a bot command
                     if received['entities'][0]['type'] == "bot_command":
@@ -165,6 +181,18 @@ class handler(BaseHTTPRequestHandler):
                                         "select one of the options below: "
                                     },
                                 }, )
+                            return
+
+                        if user_command == "force_reply":
+                            question_message_id = self.reply_user({
+                                "text": "what is your name?",
+                                "reply_markup": {
+                                    "force_reply": True,
+                                    "input_field_placeholder":
+                                    "Type your name. ",
+                                },
+                            })['result']['message_id']
+                            current_command = f"asking for name:{question_message_id}"
                             return
 
                         # not a valid bot command (doesn't match any command above)

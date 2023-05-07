@@ -2,3 +2,4 @@ anime_quote - Generate a random anime quote.
 jiankai - send jian kai memes
 pagination - a pagination example using inline keyboard
 reply_keyboard - a replyKeyboardMarkup example
+force_reply - a force reply example

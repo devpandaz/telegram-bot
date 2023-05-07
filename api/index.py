@@ -65,9 +65,11 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write("POST request for {}".format(
             self.path).encode('utf-8'))
 
+        # jsonify the incoming data
         data = json.loads(post_data.decode('utf-8'))
         print(json.dumps(data, indent=4))
 
+        # if a message is received
         if "message" in data:
 
             # settings client chat id if havent already
@@ -76,8 +78,10 @@ class handler(BaseHTTPRequestHandler):
 
             received = data['message']
             if "text" in received:
+                # follow up previous command
                 if current_command:
                     if current_command == "reply_keyboard":
+                        # if the user chose from the options in the reply keyboard and not something else
                         if received['text'] in [
                                 'Option 1', 'Option 2', 'Option 3'
                         ]:
@@ -94,6 +98,7 @@ class handler(BaseHTTPRequestHandler):
                     current_command = ""
                     return
                 try:
+                    # checking if it's a bot command
                     if received['entities'][0]['type'] == "bot_command":
                         user_command = received['text'][1:]
                         if user_command == 'anime_quote':
@@ -114,6 +119,7 @@ class handler(BaseHTTPRequestHandler):
                                                   "chat_id": client_chat_id,
                                                   "photo": photo_id,
                                               })
+                            return
 
                         if user_command == "pagination":
                             self.reply_user({
@@ -129,6 +135,7 @@ class handler(BaseHTTPRequestHandler):
                                     ]
                                 }
                             })
+                            return
 
                         if user_command == "reply_keyboard":
                             current_command = 'reply_keyboard'
@@ -151,15 +158,28 @@ class handler(BaseHTTPRequestHandler):
                                         ],
                                         "one_time_keyboard":
                                         True,
+                                        "resize_keyboard":
+                                        True,
+                                        "input_field_placeholder":
+                                        "select one of the options below: "
                                     },
                                 }, )
+                            return
 
+                        # not a valid bot command (doesn't match any command above)
+                        self.reply_user({
+                            "text":
+                            "invalid command. refer to the list of commands by pressing the menu button. "
+                        })
+
+                # not a bot command, just some random text
                 except KeyError:
                     self.reply_user({
                         "text":
                         "hello! you can get a list of commands by pressing the menu button. "
                     })
 
+        # if a callback_query is received
         if "callback_query" in data:
             callback_query = data['callback_query']
             if callback_query['data'] == 'page 1':

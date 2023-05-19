@@ -19,9 +19,7 @@ load_dotenv()
 BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 
 current_command = ""
-
 client_chat_id = ""
-
 jian_kai_memes_photo_id = [
     "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
     "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
@@ -116,8 +114,9 @@ class handler(BaseHTTPRequestHandler):
                     # checking if it's a bot command
                     if received['entities'][0]['type'] == "bot_command":
 
-                        # removing the '/' in front
-                        user_command = received['text'][1:]
+                        # removing the '/' in front, and removing the @ received from groups, if got
+                        user_command = received['text'][1:].replace(
+                            "@devpandaz_tutorial_bot", "")
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(
                                 'https://animechan.vercel.app/api/random'

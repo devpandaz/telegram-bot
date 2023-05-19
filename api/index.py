@@ -120,7 +120,7 @@ class handler(BaseHTTPRequestHandler):
 
                         # removing the '/' in front, and removing the @ received from groups, if got
                         user_command = received['text'][1:].replace(
-                            "@devpandaz_tutorial_bot", "")
+                            "@devpandaz_telegram_bot", "")
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(
                                 'https://animechan.vercel.app/api/random'

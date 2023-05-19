@@ -21,8 +21,8 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 current_command = ""
 client_chat_id = ""
 jian_kai_memes_photo_id = [
-    "AgACAgUAAxkBAAIBLGRWLvdJZk7cNG5zC3w832c8rToUAAKltTEbEwe5Vp-zoAEknAvdAQADAgADcwADLwQ",
-    "AgACAgUAAxkBAAIBMWRWNBdMA8zrrLbkTliSTaW1Bai7AAKptTEbEwe5VkZDnCnDKuj3AQADAgADcwADLwQ"
+    "AgACAgUAAxkBAAMJZGebV8LOZWSpEe9C89ZCGRnoCDYAAtC1MRuQmThX745apKspMI0BAAMCAANzAAMvBA",
+    "AgACAgUAAxkBAAMKZGebgU32hWdYaXnl92mjzPkYPDgAAtG1MRuQmThXibRMvsw1j_0BAAMCAANzAAMvBA"
 ]
 
 
@@ -79,7 +79,7 @@ class handler(BaseHTTPRequestHandler):
                 # follow up previous command
                 if current_command:
                     if current_command == "reply_keyboard":
-                        # if the user chose from the options in the reply keyboard and not something else
+                        # if the user chose from the options in the reply keyboard
                         if received['text'] in [
                                 'Option 1', 'Option 2', 'Option 3'
                         ]:
@@ -89,8 +89,12 @@ class handler(BaseHTTPRequestHandler):
                                     "remove_keyboard": True,
                                 },
                             })
-                        current_command = ""
-                        return
+                            current_command = ""
+                            return
+                        # if the user didnt chose from the options
+                        else:
+                            current_command = ""
+                            # no return, take user input down, treat it like any other command / text
 
                     if "asking for name" in current_command:
                         should_reply_to_message_id = int(

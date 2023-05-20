@@ -38,12 +38,13 @@ class handler(BaseHTTPRequestHandler):
                      str(self.headers))
         self._set_response()
         self.wfile.write(
-            "this is the api for devpandaz telegram bot<br><a href='https://t.me/devpandaz_tutorial_bot'>use the bot</a>"
+            "this is the api for devpandaz telegram bot<br><a href='https://t.me/devpandaz_telegram_bot'>use the bot</a>"
             .encode('utf-8'))
         # self.wfile.write("GET request for {}".format(
         # self.path).encode('utf-8'))
 
     def reply_user(self, data):
+        global client_chat_id
         return requests.post(f'{BOT_URL}/sendMessage',
                              json={
                                  "chat_id": client_chat_id,
@@ -121,6 +122,23 @@ class handler(BaseHTTPRequestHandler):
                         # removing the '/' in front, and removing the @ received from groups, if got
                         user_command = received['text'][1:].replace(
                             "@devpandaz_telegram_bot", "")
+
+                        if user_command == "start":
+                            msg = "here is a list of commands to help you get started: \n\n"
+                            with open(
+                                    os.path.abspath(
+                                        os.path.join(os.getcwd(),
+                                                     "bot_commands.txt")),
+                                    "r") as bot_commands_file:
+
+                                for bot_commands in bot_commands_file:
+                                    msg += f"/{bot_commands}"
+
+                                self.reply_user({
+                                    "text": msg,
+                                })
+                            return
+
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(
                                 'https://animechan.vercel.app/api/random'

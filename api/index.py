@@ -21,9 +21,21 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 current_command = ""
 client_chat_id = ""
 jian_kai_memes_photo_id = [
-    "AgACAgUAAxkBAAMJZGebV8LOZWSpEe9C89ZCGRnoCDYAAtC1MRuQmThX745apKspMI0BAAMCAANzAAMvBA",
-    "AgACAgUAAxkBAAMKZGebgU32hWdYaXnl92mjzPkYPDgAAtG1MRuQmThXibRMvsw1j_0BAAMCAANzAAMvBA"
+    "https://imgur.com/BDacygp.jpg", "https://imgur.com/5SrNyYh.jpg"
 ]
+
+with open(os.path.abspath(os.path.join(os.getcwd(), "bot_commands.txt")),
+          "r") as bot_commands_file:
+
+    bot_commands = []
+    for line in bot_commands_file.readlines():
+        command, description = line.replace("\n", "").split(" - ")
+        bot_commands.append({
+            "command": command,
+            "description": description,
+        })
+
+    requests.post(f"{BOT_URL}/setMyCommands", json={"commands": bot_commands})
 
 
 class handler(BaseHTTPRequestHandler):
@@ -125,18 +137,19 @@ class handler(BaseHTTPRequestHandler):
 
                         if user_command == "start":
                             msg = "here is a list of commands to help you get started: \n\n"
+
                             with open(
                                     os.path.abspath(
                                         os.path.join(os.getcwd(),
                                                      "bot_commands.txt")),
                                     "r") as bot_commands_file:
 
-                                for bot_commands in bot_commands_file:
-                                    msg += f"/{bot_commands}"
+                                for line in bot_commands_file.readlines():
+                                    msg += f"/{line}"
 
-                                self.reply_user({
-                                    "text": msg,
-                                })
+                            self.reply_user({
+                                "text": msg,
+                            })
                             return
 
                         if user_command == 'anime_quote':

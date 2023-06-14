@@ -21,9 +21,14 @@ BOT_URL = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
 current_command = ""
 client_chat_id = ""
 jian_kai_memes_photo_id = [
-    "https://imgur.com/BDacygp.jpg", "https://imgur.com/5SrNyYh.jpg"
+    "https://imgur.com/BDacygp.jpg",
+    "https://imgur.com/5SrNyYh.jpg",
+    "https://imgur.com/bFDoEVN.jpg",
 ]
 
+# setting bot commands to ensure it is always updated
+# executed every time the server starts, aka everytime I push a new deployment to vercel
+# any changes in commands just edit in ../bot_commands.txt
 with open(os.path.abspath(os.path.join(os.getcwd(), "bot_commands.txt")),
           "r") as bot_commands_file:
 
@@ -135,6 +140,7 @@ class handler(BaseHTTPRequestHandler):
                         user_command = received['text'][1:].replace(
                             "@devpandaz_telegram_bot", "")
 
+                        # sending a list of commands to help users get started
                         if user_command == "start":
                             msg = "here is a list of commands to help you get started: \n\n"
 
@@ -152,6 +158,7 @@ class handler(BaseHTTPRequestHandler):
                             })
                             return
 
+                        # generate random anime quote using animechan api
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(
                                 'https://animechan.vercel.app/api/random'
@@ -162,6 +169,7 @@ class handler(BaseHTTPRequestHandler):
                             })
                             return
 
+                        # jian kai memes
                         if user_command == "jiankai":
                             self.reply_user(
                                 {"text": 'here are some jian kai memes:'})
@@ -173,6 +181,7 @@ class handler(BaseHTTPRequestHandler):
                                               })
                             return
 
+                        # pagination example in telegram using callback_data
                         if user_command == "pagination":
                             self.reply_user({
                                 "text": "Page 1",
@@ -189,6 +198,7 @@ class handler(BaseHTTPRequestHandler):
                             })
                             return
 
+                        # reply_keyboard example in telegram
                         if user_command == "reply_keyboard":
                             current_command = 'reply_keyboard'
                             self.reply_user(
@@ -218,6 +228,7 @@ class handler(BaseHTTPRequestHandler):
                                 }, )
                             return
 
+                        # force_reply example in telegram
                         if user_command == "force_reply":
                             question_message_id = self.reply_user({
                                 "text": "what is your name?",

@@ -24,6 +24,7 @@ jian_kai_memes_photo_id = [
     "https://imgur.com/BDacygp.jpg",
     "https://imgur.com/5SrNyYh.jpg",
     "https://imgur.com/bFDoEVN.jpg",
+    "https://imgur.com/NcAusJL.jpg",
 ]
 
 # setting bot commands to ensure it is always updated

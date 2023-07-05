@@ -162,8 +162,7 @@ class handler(BaseHTTPRequestHandler):
                         # generate random anime quote using animechan api
                         if user_command == 'anime_quote':
                             anime_quote_data = requests.get(
-                                'https://animechan.vercel.app/api/random'
-                            ).json()
+                                'https://animechan.xyz/api/random').json()
                             self.reply_user({
                                 "text":
                                 f'"{anime_quote_data["quote"]}"\n\n---- a quote from {anime_quote_data["character"]} ({anime_quote_data["anime"]})',

@@ -25,7 +25,10 @@ jian_kai_memes_photo_id = [
     "https://imgur.com/5SrNyYh.jpg",
     "https://imgur.com/bFDoEVN.jpg",
     "https://imgur.com/NcAusJL.jpg",
+    "https://imgur.com/KBmpgeb.jpg",
 ]
+ting_hong_memes_photo_id = ["https://imgur.com/F94fmXO.jpg"]
+devpandaz_memes_photo_id = ["https://imgur.com/ZN5Y3aS.jpg"]
 
 # setting bot commands to ensure it is always updated
 # executed every time the server starts, aka everytime I push a new deployment to vercel
@@ -174,6 +177,30 @@ class handler(BaseHTTPRequestHandler):
                             self.reply_user(
                                 {"text": 'here are some jian kai memes:'})
                             for photo_id in jian_kai_memes_photo_id:
+                                requests.post(f'{BOT_URL}/sendPhoto',
+                                              json={
+                                                  "chat_id": client_chat_id,
+                                                  "photo": photo_id,
+                                              })
+                            return
+
+                        if user_command == "tinghong":
+                            self.reply_user(
+                                {"text": 'here are some ting hong memes:'})
+                            for photo_id in ting_hong_memes_photo_id:
+                                requests.post(f'{BOT_URL}/sendPhoto',
+                                              json={
+                                                  "chat_id": client_chat_id,
+                                                  "photo": photo_id,
+                                              })
+                            return
+
+                        if user_command == "devpandaz":
+                            self.reply_user({
+                                "text":
+                                'here are some memes of the creator of this bot aka devpandaz:'
+                            })
+                            for photo_id in devpandaz_memes_photo_id:
                                 requests.post(f'{BOT_URL}/sendPhoto',
                                               json={
                                                   "chat_id": client_chat_id,
